@@ -23,6 +23,20 @@
 import XCTest
 import SwiftyJSON
 
+#if canImport(ObjectiveC)
+import Foundation
+#endif
+
+private func withAutoreleasepool(_ block: () -> Void) {
+    #if canImport(ObjectiveC)
+    autoreleasepool {
+        block()
+    }
+    #else
+    block()
+    #endif
+}
+
 class PerformanceTests: XCTestCase {
 
     var testData: Data!
@@ -74,7 +88,7 @@ class PerformanceTests: XCTestCase {
         }
         self.measure {
             for _ in 1...100 {
-                autoreleasepool {
+                withAutoreleasepool {
                     if let array = json.array {
                         XCTAssertTrue(array.count > 0)
                     }
@@ -90,7 +104,7 @@ class PerformanceTests: XCTestCase {
         }
         self.measure {
             for _ in 1...100 {
-                autoreleasepool {
+                withAutoreleasepool {
                     if let dictionary = json.dictionary {
                         XCTAssertTrue(dictionary.count > 0)
                     }
@@ -106,7 +120,7 @@ class PerformanceTests: XCTestCase {
         }
         self.measure {
             for _ in 1...100 {
-                autoreleasepool {
+                withAutoreleasepool {
                     let string = json.rawString()
                     XCTAssertTrue(string != nil)
                 }
@@ -125,7 +139,7 @@ class PerformanceTests: XCTestCase {
         let json = JSON(data)
 
         self.measure {
-            autoreleasepool {
+            withAutoreleasepool {
                 if let dictionary = json.dictionary {
                     XCTAssertTrue(dictionary.count == 100001)
                 } else {
